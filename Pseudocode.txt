@@ -1,0 +1,384 @@
+INCLUDE C# LIBRARY "stdio.h"
+INCLUDE C# LIBRARY "math.h"
+INCLUDE C# LIBRARY "string.h"
+INCLUDE C# LIBRARY "conio.h"
+INCLUDE C# LIBRARY "unistd.h"
+INCLUDE C# LIBRARY "stdlib.h"
+
+INITIALIZE integer FUNCTION max( integer a, integer b)
+{
+       IF ( a > b )        |     IF ( a < b )
+       {                   |     {
+           RETURN a;       |        RETURN b;
+       }END IF;            |     }END IF;
+}
+
+
+INITIALIZE integer FUNCTION Knapsack( integer W, integer value[], integer n, character name[], integer USER_WEIGHT[], integer GRAM_WEIGHT[], integer USER_W)
+{
+    
+       DECLARE integer i;
+       DECLARE integer w;
+       DECLARE integer K[n + 1][W + 1]; --> //(2D - VECTOR);
+    
+       FOR ( from i = 0 to i = n , i increments by 1 )
+       {
+           FOR ( from w = 0 to w = W,  w increments by 1 )
+           {
+                IF ( i = 0 OR w = 0 ) 
+                      K[i][w] = 0;
+                ELSE IF (  GRAM_WEIGHT[i - 1] < w  OR  GRAM_WEIGHT[i - 1] = w )
+                      K[i][w] = CALL "max" function for ( value[i - 1] + K[i - 1][w - GRAM_WEIGHT[i - 1]  and  K[i - 1][w]  )
+                ELSE
+                      K[i][w] = K[i - 1][w];
+                END IF;
+            }END FOR;
+        }END FOR;
+ 
+        
+        DECLARE integer "result";
+        SET result = K[n][W];
+        PRINT ---> "The maximum value you can store in the Knapsack is: <integer result> " ;
+
+        SET  w = W  (equal the two numbers) ;
+        PRINT ---> "Items included in the solution:" ;
+        PRINT ---> "Item (Entry Number) |  Name  |  Value  |  Weight(g)  | " ;\
+        
+
+        FOR ( from i = n to i = 0, i decrements by 1 )
+        {
+             IF ( result = K[i - 1][w] )
+                CONTINUE;
+             ELSE
+             {
+                PRINT ---> "\n_________________________________________________"
+                PRINT ---> " < integer i> "
+                PRINT ---> "                   |< character name[i-1]>   |"
+                PRINT ---> " < integer value[i - 1]>     |"
+                PRINT ---> " < integer GRAM_WEIGHT[i - 1]> "
+
+                SET  result = result - value[i - 1];
+                SET  w = w - GRAM_WEIGHT[i - 1];
+              } 
+              END IF;
+        }END FOR;  
+}END FUNCTION;
+
+
+INITIALIZE integer main function()
+{
+     DECLARE integer i, W, User_W, pointer, pointer_value, pointer_USER, pointer_GRAM, pointer_UserW, pointer_W;
+                    note: all pointers are pointers to integers 
+     DECLARE character pointer_name, cont_prog, n;
+                    note: all pointers are pointers to characters
+     SET cont_prog = 'n';
+
+     DO
+  |--{
+  |        system("@cls||clear")     //clears user interface;
+  |        PRINT ---> "When using this system remember all numbers entered must be integers!" ;
+  |        PRINT ---> "Press Any Key to COntinue"
+  |        
+  |        note: "use <getchar()> function to add delay to the outputs so the user can read
+  |               the previous line with no distraction"
+  |
+  |        PRINT ---> "Enter number of items: "
+  |        READ --->   < n >, (remember the adress)
+  |        ALLOCATE < pointer > the MEMORY of < n > multiplied by the <SIZE OF INT>;
+  |
+  |        IF ( pointer == NULL CHARACTER )
+  |        { 
+  |            PRINT ---> "Error! Memory not allocated"
+  |            RETURN 0;
+  |        }END IF;
+  |        (Release the Allocated memory on <pointer>);
+  |
+  |       
+  |        DECLARE integer value[n], USER_WEIGHT[n], GRAM_WEIGHT[n], NUM, W, User_W;
+  |        DECLARE character name[n];
+  |
+  |        PRINT ---> " Enter value and then weight of each item: "
+  |        FOR( i = 0 and while i < n, i increments by 1)  [first FOR]
+  |      - {
+  |     |         PRINT ---> "Enter a 1 letter reference for the item -  integer< i + 1 > ";
+  |     |          READ --->   < name[i] >, (remember the adress);
+  |     | 
+  |     |          ALLOCATE < pointer_name > the MEMORY of < name[i] > multiplied by the < SIZE OF CHAR >; 
+  |     |      
+  |     |          IF( pointer_name == NULL CHARACTER )
+  |     |          {
+  |     |           	PRINT ---> " Error! Memory not allocated "; 
+  |     |                 RETURN 0;
+  |     |          }END IF;
+  |     |
+  |     |	 PRINT ---> " Enter value for item -  integer< i + 1 >";
+  |     |         READ --->   < value[i] >, (remember the adress); 
+  |     |           
+  |     |          ALLOCATE < pointer_value > the MEMORY of < value[i] > multiplied by the < SIZE OF INT >; 
+  |     |          
+  |     |          IF( pointer_value == NULL CHARACTER )
+  |     |          {
+  |     |              PRINT ---> "Error! Memory not allocated ";
+  |     |          }END IF;
+  |     |
+  |     |          WHILE ( value[i] < 0 )
+  |     |          {
+  |     |          	PRINT ---> "Invalid value (must be an integer and at least 0" ;
+  |     |                 PRINT ---> "Enter new value from item -  integer< i + 1> "
+  |     |                 READ --->  < value[i] >, (remember the adress);
+  |     |                 ALLOCATE < pointer_value > the MEMORY of < value[i] > multiplied by the < SIZE OF INT >; 
+  |     |          
+  |     |                IF( pointer_value == NULL CHARACTER )
+  |     |                {
+  |     |                 	PRINT ---> "Error! Memory not allocated ";
+  |     |                         RETURN 0;
+  |     |                }END IF;
+  |     |         }END WHILE;
+  |     | 
+  |     |         PRINT ---> "SELECT MEASURING MASS FOR ITEM";
+  |     |         PRINT ---> " 1. MILLIGRAM ";
+  |     |         PRINT ---> " 2. DECIGRAM ";
+  |     |         PRINT ---> " 3. KILOGRAM ";
+  |     |         PRINT ---> " 4. GRAM ";
+  |     |         PRINT ---> "ENTER CHOICE HERE: "
+  |     |         READ --->  < NUM >, (remember the adress);
+  |     |         
+  |     |         SWITCH ( NUM )
+  |     |         {
+  |     |         	CASE 1:
+  |     |                     PRINT ---> "SELECTED MILLIGRAMS TO GRAMS"
+  |     |                     BREAK;
+  |     |                 CASE 2:
+  |     |                     PRINT ---> "SELECTED DECIGRAMS TO GRAMS"
+  |     |                     BREAK;
+  |     |                 CASE 3:
+  |     |                     PRINT ---> "SELECTED KILOGRAMS TO GRAMS"
+  |     |                     BREAK;
+  |     |                 CASE 4:
+  |     |                     PRINT ---> "SELECTED GRAMS TO GRAMS"
+  |     |                     BREAK;
+  |     |                 DEFAULT:
+  |     |                     PRINT ---> "YOU HAVE ENTERED WRONG CHOICE!"
+  |     |                     goto QUIT;
+  |     |          }END SWITCH;
+  |     |
+  |     |          PRINT ---> "Enter weight for item:  integer< i + 1 >"
+  |     |          READ --->   < USER_WEIGHT[i] >, (remember the adress);
+  |     |          ALLOCATE < pointer_USER > the MEMORY of < USER_WEIGHT[i] > multiplied by the < SIZE OF INT >; 
+  |     |          
+  |     |          IF ( pointer_USER = NULL CHARACTER )
+  |     |          {
+  |     |          	PRINT ---> "Error! Memory not allocated";
+  |     |          }END IF;
+  |     | 
+  |     |          WHILE ( USER_WEIGHT[i] < 0 )
+  |     |          {
+  |     |          	 PRINT ---> "Invalid value (must be an integer and at least 0 g) ";
+  |     |                 PRINT ---> "Enter new wight for item -  integer< i + 1 >"
+  |     |                 READ --->   < USER_WEIGHT[i] >, (remember the adress);
+  |     |                 ALLOCATE < pointer_USER > the MEMORY of < USER_WEIGHT[i] > multiplied by the < SIZE OF INT >; 
+  |     |          
+  |     |                 IF ( pointer_USER = NULL CHARACTER )
+  |     |                 {
+  |     |          		 PRINT ---> "Error! Memory not allocated";
+  |     |                         RETURN 0;
+  |     |                 }END IF;
+  |     |           }END WHILE;
+  |     |
+  |     |           SWITCH ( NUM )
+  |     |           {
+  |     |           	CASE 1:
+  |     |                    SET GRAM_WEIGHT[i] = USER_WEIGHT[i] / 1000;
+  |     |                    ALLOCATE < pointer_GRAM > the MEMORY of < GRAM_WEIGHT[i] > multiplied by < SIZE OF INT >;
+  |     |
+  |     |                    IF ( pointer_GRAM = NULL CHARACTER )
+  |     |                    {
+  |     |                     	 PRINT --> "Error! Memory not allocated"
+  |     |                          RETURN 0;
+  |     |                    }END IF;
+  |     |
+  |     |                    PRINT --->  " < USER_WEIGHT[i] > MILLIGRAMS IS < GRAM_WEIGHT[i] > GRAMS " ;
+  |     |                   BREAK;
+  |     | 
+  |     |                 CASE 2:
+  |     |                    SET GRAM_WEIGHT[i] = USER_WEIGHT[i] / 10;
+  |     |                    ALLOCATE < pointer_GRAM > the MEMORY of < GRAM_WEIGHT[i] > multiplied by < SIZE OF INT >;
+  |     |
+  |     |                    IF ( pointer_GRAM = NULL CHARACTER )
+  |     |                    {
+  |     |                     	 PRINT --> "Error! Memory not allocated"
+  |     |                          RETURN 0;
+  |     |                    }END IF;
+  |     |
+  |     |                    PRINT ---> " < USER_WEIGHT[i] > DECIGRAMS IS < USER_WEIGHT[i] > GRAMS";
+  |     |                    BREAK;
+  |     | 
+  |     |                 CASE 3:
+  |     |                    SET GRAM_WEIGHT[i] = USER_WEIGHT[i] * 1000;
+  |     |                    ALLOCATE < pointer_GRAM > the MEMORY of < GRAM_WEIGHT[i] > multiplied by < SIZE OF INT >;
+  |     |
+  |     |                    IF ( pointer_GRAM = NULL CHARACTER )
+  |     |                    {
+  |     |                     	 PRINT --> "Error! Memory not allocated"
+  |     |                          RETURN 0;
+  |     |                    }END IF;
+  |     |                    
+  |     |                    PRINT ---> " < USER_WEIGHT[i] > KILOGRAMS IS < GRAM_WEIGHT[i] > GRAMS";
+  |     |                    BREAK;
+  |     |         
+  |     |                 CASE 4:
+  |     |                    SET GRAM_WEIGHT[i] = USER_WEIGHT[i];
+  |     |                    ALLOCATE < pointer_GRAM > the MEMORY of < GRAM_WEIGHT[i] > multiplied by < SIZE OF INT >;
+  |     |
+  |     |                    IF ( pointer_GRAM = NULL CHARACTER )
+  |     |                    {
+  |     |                     	 PRINT --> "Error! Memory not allocated"
+  |     |                          RETURN 0;
+  |     |                    }END IF;
+  |     |                    
+  |     |                    PRINT ---> " < USER_WEIGHT[i] > GRAMS IS < GRAM_WEIGHT[i] > GRAMS"
+  |     |                    BREAK;
+  |     |            }END SWITCH;
+  |     |- } END FOR; [first FOR];
+  |
+  |        use SLEEP function for 0.5 seconds;
+  |        PRINT ---> "SELECT MEASURING FOR KNAPSACK MASS"
+  |        PRINT ---> "1. MILLIGRAMS"
+  |        PRINT ---> "2. DECIGRAMS"
+  |        PRINT ---> "3. KILOGRAMS"
+  |        PRINT ---> "4. GRAMS"
+  |        PRINT ---> "ENTER CHOICE HERE : "
+  |        READ --->  < NUM >, (remember the adress);  
+  |
+  |        SWITCH ( NUM )
+  |        {
+  |        	CASE 1:
+  |                  PRINT ---> "SELECTED MILIGRAMS TO GRAMS"
+  |                  BREAK;
+  |              CASE 2:
+  |                  PRINT ---> "SELECTED DECIGRAMS TO GRAMS"
+  |                 BREAK;
+  |              CASE 3:
+  |                  PRINT ---> "SELECTED KILOGRAMS TO GRAMS"
+  |                  BREAK;                 
+  |              CASE 4:
+  |                  PRINT ---> "SELECTED GRAMS TO GRAMS"
+  |                  BREAK;
+  |              DEFAULT:
+  |                  PRINT ---> "YOU HAVE ENTERED WRONG CHOICE! " 
+  |                  goto QUIT;
+  |         }END SWITCH;
+  |
+  |         PRINT ---> "Enter size of knapsack (Max capacity): "
+  |         READ --->  < User_W > (remember the adress);
+  |         ALLOCATE < pointer_UserW > the MEMORY of < User_W > multiplied by < SIZE OF INT >; 
+  |
+  |         IF ( pointer_UserW = NULL CHARACTER )
+  |         {
+  |                PRINT --> "Error! Memory not allocated"
+  |                RETURN 0;
+  |         }END IF;
+  |
+  |         WHILE ( User_W < 0 )
+  |         {
+  |         	PRINT ---> "Invalid value (must be an integer and at least 0 g)"
+  |              PRINT ---> "Enter new Knapsack size -  integer < i >"
+  |              READ --->  < User_W > (remember the adress);
+  |              ALLOCATE < pointer_UserW > the MEMORY of < User_W > multiplied by < SIZE OF INT >;
+  |
+  |              IF ( pointer_UserW = NULL CHARACTER )
+  |              {
+  |                  PRINT --> "Error! Memory not allocated"
+  |                  RETURN 0;
+  |              }END IF;
+  |         }END WHILE;
+  |
+  |         SWITCH ( NUM ) 
+  |         {
+  |         	  CASE 1:
+  |                   SET W = User_W / 1000;
+  |                   ALLOCATE < pointer_W > the MEMORY of < W > multiplied by < SIZE OF INT >;
+  |              
+  |                   IF ( pointer_W = NULL CHARACTER ) 
+  |                   {
+  |                       PRINT ---> "Error! Memory not allocated";
+  |                       RETURN 0;
+  |                   }END IF;
+  |
+  |                   PRINT ---> " < User_W > MILLIGRAMS IS < W > GRAMS"
+  |                   BREAK;
+  |
+  |                CASE 2:
+  |                   SET W = User_W / 10;
+  |                   ALLOCATE < pointer_W > the MEMORY of < W > multiplied by < SIZE OF INT >;
+  |              
+  |                   IF ( pointer_W = NULL CHARACTER ) 
+  |                   {
+  |                       PRINT ---> "Error! Memory not allocated";
+  |                       RETURN 0;
+  |                   }END IF;
+  |
+  |                   PRINT ---> " < User_W > DECIGRAMS IS < W > GRAMS"
+  |                   BREAK;
+  |
+  |               CASE 3:
+  |                   SET W = User_W * 1000;
+  |                   ALLOCATE < pointer_W > the MEMORY of < W > multiplied by < SIZE OF INT >;
+  |              
+  |                   IF ( pointer_W = NULL CHARACTER ) 
+  |                   {
+  |                      PRINT ---> "Error! Memory not allocated";
+  |                       RETURN 0;
+  |                   }END IF; 
+  |
+  |                   PRINT ---> " < User_W > KILOGRAMS IS < W > GRAMS"
+  |                   BREAK;
+  |
+  |               CASE 4:
+  |                   SET W = User_W;
+  |                   ALLOCATE < pointer_W > the MEMORY of < W > multiplied by < SIZE OF INT >;
+  |              
+  |                   IF ( pointer_W = NULL CHARACTER ) 
+  |                   {
+  |                       PRINT ---> "Error! Memory not allocated";
+  |                       RETURN 0;
+  |                   }END IF;
+  |
+  |                  PRINT ---> " < User_W > GRAMS IS < W > GRAMS"
+  |                   BREAK;
+  |           } END SWITCH;
+  |
+  |           CALL function Knapsack ( W, value, n, name, USER_WEIGHT, GRAM_WEIGHT, User_W );
+  |
+  |           RELEASE all ALLOCATED MEMORY on:
+  |           < pointer_ W >
+  |           < pointer_UserW >
+  |           < pointer_GRAM >
+  |           < poinrter_ USER >
+  |           < pointer_value >  
+  |           < pointer_name >
+  |
+  |           use SLEEP function for 1.5 seconds;
+  |           PRINT ---> "Do you want to start again? (y/n): "
+  |           READ ---> character< cont_prog >, (remember the adress);
+  |--} WHILE ( cont_prog = 'y' OR cont_prog = 'Y' )
+  END DO_WHILE;
+
+  QUIT: ;  //entering wrong conversion sends you out of code;
+
+  RETURN 0;
+
+} END MAIN FUNCTION;
+                                     
+                                                    
+                   
+           
+
+
+ 
+                  
+           
+                   
+
+     
+   
